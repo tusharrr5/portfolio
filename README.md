@@ -28,7 +28,7 @@ npm run screenshots  # Playwright screenshots at 360–1440px into /screenshots 
 ## 2. Adding screenshots and your photo
 
 1. Save full-size screenshots as `images-src/work/<slug>.png` (e.g. `images-src/work/tohfa.png`). Desktop screenshots at 1440px wide or more work best. They get cropped to 16:10 from the top, so every card matches.
-2. Save your photo as `images-src/me.jpg`. It gets cropped to 4:5 around the centre.
+2. Save your photo as `images-src/me.webp` (or `.png`/`.jpg`). It gets cropped square around the centre.
 3. Run `npm run images`. This writes resized WebP files to `public/images/`.
 4. In `site.ts`, set the project's `image`:
    ```ts
@@ -36,32 +36,32 @@ npm run screenshots  # Playwright screenshots at 360–1440px into /screenshots 
    ```
    and your photo:
    ```ts
-   photo: { src: "/images/me.webp", alt: "[Your name] at a desk", width: 960, height: 1200 },
+   photo: { src: "/images/me.webp", alt: "[Your name] at a desk", width: 640, height: 640 },
    ```
    Use the base name (no `-640` suffix). The custom loader in `src/lib/image-loader.ts` picks the right size for each screen.
 
-## 3. Setting up the contact form
+## 3. How the contact form works
 
-The form posts straight from the browser, so it works on a static host. Pick one:
+**Enquiries go to your WhatsApp.** When someone submits the form, it opens WhatsApp (the app on phones, WhatsApp Web on computers) with a chat to `links.whatsapp` and their name, email, project type and message already typed in. They tap send and it arrives on your business number. There's no server and no API key, and it works on a static host.
 
-**Web3Forms (recommended, free)**
-1. Go to https://web3forms.com, enter your email and copy the access key.
-2. In Vercel: Project → Settings → Environment Variables → add `NEXT_PUBLIC_WEB3FORMS_KEY`.
-3. Redeploy. Env vars are baked in at build time, so a redeploy is required.
+The success screen tells them to tap send, and gives them an "Open WhatsApp" button and your email in case WhatsApp didn't open.
 
-**Formspree**
-1. Create a form at https://formspree.io and copy the ID from `https://formspree.io/f/<ID>`.
-2. Add `NEXT_PUBLIC_FORMSPREE_ID` in Vercel and redeploy. If both are set, Formspree is used.
+**Optional: an email copy of every enquiry.** Visitors sometimes open WhatsApp and never tap send. To still get their details by email:
+1. Go to https://web3forms.com, enter `tusharbhojwani.in@gmail.com` and copy the access key.
+2. In Vercel: Project → Settings → Environment Variables → add `NEXT_PUBLIC_WEB3FORMS_KEY` (or `NEXT_PUBLIC_FORMSPREE_ID` for Formspree).
+3. Redeploy. Env vars are baked in at build time.
 
-For local testing, copy `.env.example` to `.env.local` and fill it in.
+The email copy is sent in the background and never blocks the WhatsApp step. For local testing, copy `.env.example` to `.env.local`.
 
-The form includes a hidden honeypot field (`botcheck`). Bots that fill it are shown a success message and nothing is sent. With no key set, the form shows its error state with your email address, so visitors can still reach you.
+The form has a hidden honeypot field (`botcheck`). Bots that fill it see the success screen, and nothing opens or sends.
+
+Why not fully automatic delivery to WhatsApp? That needs the paid WhatsApp Business API (through Meta or a provider like Twilio) plus a server to keep the token secret. A static site can't hold that safely, and the prefilled chat gets the message to the same number.
 
 ## 4. Deploying to Vercel
 
 1. Push this folder to a GitHub repo.
 2. On https://vercel.com/new, import the repo. Vercel detects Next.js. Keep the defaults.
-3. Add the environment variables: `NEXT_PUBLIC_WEB3FORMS_KEY` and `NEXT_PUBLIC_SITE_URL` (your final URL, e.g. `https://yourname.dev`).
+3. Add the environment variable `NEXT_PUBLIC_SITE_URL` (your final URL, e.g. `https://yourname.dev`), and optionally `NEXT_PUBLIC_WEB3FORMS_KEY` for email copies of enquiries.
 4. Deploy.
 5. Turn on **Analytics** in the Vercel project's Analytics tab. The `<Analytics />` component is already installed.
 6. Optional: add a custom domain under Settings → Domains, then update `NEXT_PUBLIC_SITE_URL` and redeploy.
@@ -85,9 +85,13 @@ scripts/                   image resizing, local server, screenshot checks
 
 ## 6. Design notes
 
-- **Palette:** paper `#F4F1EA`, ink `#1B1A17`, muted `#5C574E`, one vermilion accent `#B0391C`. Every text pair passes WCAG AA (lowest is accent on the darker paper at 4.9:1).
-- **Type:** Instrument Serif for headlines, Geist for body text, Geist Mono for labels. All loaded with `next/font`, so there's no layout shift.
-- **Motion:** content fades up gently as you scroll. With "reduce motion" turned on there's no animation, and without JS nothing is hidden.
+- **Theme:** cyberpunk, kept professional, with colours taken from the portrait. Deep navy (`#070C1A`), cyan accent (`#27DEF7`, from the React icon), warm orange (`#FF9F4A`, from the glowing ring) only for small tags and the portrait glow, mint for "available". Every text pair passes WCAG AA (most pass AAA).
+- **Shape language:** cut-corner primary buttons, HUD corner brackets on key cards, square 2–4px corners, a dot-matrix backdrop and `// 01` mono section labels.
+- **Type:** Chakra Petch for headlines and buttons, Geist for body text, Geist Mono for labels. All loaded with `next/font`.
+- **Layout:** hero with an ID-card portrait and a live status panel; the first project as a wide featured card with the next two side by side; services as a pricing table with a recommended plan; a vertical process timeline beside a sticky heading; an `about.json` facts card; and one combined contact panel.
+- **Portrait:** `images-src/me.webp` is your illustrated portrait. It is cropped square, so keep the face near the centre if you replace it. Run `npm run images` after changing it. The original photo is kept as `images-src/me-photo.webp`.
+- **Motion:** gentle fade-up on scroll, turned off for "reduce motion".
+- Colours live in `src/app/globals.css` under `:root`.
 
 **What I took from the reference sites:**
 - *akkila.dev:* the availability block with location, timezone, reply time and a live local clock.
@@ -103,18 +107,17 @@ Layouts and copy are original. No text was copied.
 - `npm run build` and `npm run lint` both pass cleanly.
 - No horizontal scroll at 360, 390, 430, 768, 1024 or 1440px (checked automatically by `npm run screenshots`).
 - On a 390×844 phone, the hero headline, supporting line and primary button all show above the sticky bar.
-- Lighthouse mobile on the local static build (with gzip): Performance 98–99, Accessibility 100, Best Practices 96, SEO 100. The 96 is only the analytics script returning 404 locally. Vercel serves that script.
-- Form: success, error, honeypot and "Ask about this" preselect all tested with a mocked endpoint. Inputs are 16px.
+- Lighthouse mobile on the local static build (with gzip): Performance 96–98, Accessibility 100, Best Practices 96, SEO 100. The 96 is only the analytics script returning 404 locally. Vercel serves that script.
+- Form: opens WhatsApp to +91 92329 28771 with the enquiry filled in; success screen, honeypot and "Ask about this" preselect tested. Inputs are 16px.
 
 ---
 
 ## Placeholder checklist
 
-Done: name, photo, WhatsApp, GitHub, LinkedIn, prices, projects, about, bug-fix window.
+Done: name, photo, email, WhatsApp (form delivers there), GitHub, LinkedIn, prices, projects, about, bug-fix window.
 
 **Still to do**
-- [ ] `links.email`: your work email (the only `[PLACEHOLDER]` left in `site.ts`)
-- [ ] `NEXT_PUBLIC_WEB3FORMS_KEY` (or `NEXT_PUBLIC_FORMSPREE_ID`) in Vercel, then redeploy
+- [ ] Optional: `NEXT_PUBLIC_WEB3FORMS_KEY` in Vercel for an email copy of every enquiry, then redeploy
 - [ ] `NEXT_PUBLIC_SITE_URL` in Vercel once you know the final URL
 - [ ] `links.calendly`: optional
 

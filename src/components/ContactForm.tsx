@@ -3,47 +3,59 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { contact, links, person } from "@/content/site";
 import { emailHref } from "@/lib/content";
+import { Chat } from "@/components/Icons";
 
-type Status = "idle" | "sending" | "success" | "error";
+/*
+ * The form sends enquiries to WhatsApp: on submit it opens a chat with
+ * links.whatsapp, with the visitor's details already typed in. They tap
+ * send and it lands on the business number. No server or API key needed.
+ *
+ * Optional: set NEXT_PUBLIC_WEB3FORMS_KEY (or NEXT_PUBLIC_FORMSPREE_ID) to
+ * also get an email copy of every enquiry, even if they never tap send.
+ */
 
 const WEB3FORMS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 const FORMSPREE_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID;
 
-async function send(data: Record<string, string>) {
+type Enquiry = { name: string; email: string; project_type: string; message: string };
+
+function whatsappUrl(d: Enquiry) {
+  const lines = [
+    `Hi ${person.name.split(" ")[0]}, I found you through your portfolio.`,
+    "",
+    `*Name:* ${d.name}`,
+    ...(d.email ? [`*Email:* ${d.email}`] : []),
+    `*Project:* ${d.project_type}`,
+    "",
+    d.message,
+  ];
+  const digits = links.whatsapp.replace(/\D/g, "");
+  return `https://wa.me/${digits}?text=${encodeURIComponent(lines.join("\n"))}`;
+}
+
+/** Fire-and-forget email copy. Never blocks or fails the WhatsApp step. */
+function sendEmailCopy(d: Enquiry) {
+  const subject = `New project enquiry from ${d.name}`;
+  const opts = { method: "POST", keepalive: true, headers: { "Content-Type": "application/json", Accept: "application/json" } };
   if (FORMSPREE_ID) {
-    const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ ...data, _subject: `New project enquiry from ${data.name}` }),
-    });
-    if (!res.ok) throw new Error(`Formspree responded ${res.status}`);
-    return;
+    fetch(`https://formspree.io/f/${FORMSPREE_ID}`, { ...opts, body: JSON.stringify({ ...d, _subject: subject }) }).catch(
+      console.error,
+    );
+  } else if (WEB3FORMS_KEY) {
+    fetch("https://api.web3forms.com/submit", {
+      ...opts,
+      body: JSON.stringify({ ...d, access_key: WEB3FORMS_KEY, subject, from_name: `${person.name} portfolio` }),
+    }).catch(console.error);
   }
-  if (WEB3FORMS_KEY) {
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        ...data,
-        access_key: WEB3FORMS_KEY,
-        subject: `New project enquiry from ${data.name}`,
-        from_name: `${person.name} portfolio`,
-      }),
-    });
-    const json = (await res.json().catch(() => ({}))) as { success?: boolean };
-    if (!res.ok || !json.success) throw new Error("Web3Forms rejected the submission");
-    return;
-  }
-  throw new Error(
-    "No form key set. Add NEXT_PUBLIC_WEB3FORMS_KEY (or NEXT_PUBLIC_FORMSPREE_ID) to your environment.",
-  );
 }
 
 const inputClass =
-  "field block w-full rounded-[var(--radius-md)] border border-line-strong bg-paper px-3.5 py-3 text-base text-ink placeholder:text-muted/80 transition-colors focus:border-ink focus:outline-2 focus:outline-offset-0 focus:outline-accent";
+  "field block w-full rounded-[2px] border border-line-strong bg-bg px-4 py-3 text-base text-fg placeholder:text-muted/70 transition-colors focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30";
+
+const labelClass = "mb-2 block font-mono text-[0.75rem] uppercase tracking-[0.08em] text-muted";
 
 export function ContactForm() {
-  const [status, setStatus] = useState<Status>("idle");
+  const [sentUrl, setSentUrl] = useState<string | null>(null);
   const [type, setType] = useState("");
   const statusRef = useRef<HTMLDivElement>(null);
   const email = emailHref();
@@ -59,52 +71,53 @@ export function ContactForm() {
   }, []);
 
   useEffect(() => {
-    if (status === "success" || status === "error") statusRef.current?.focus();
-  }, [status]);
+    if (sentUrl) statusRef.current?.focus();
+  }, [sentUrl]);
 
-  async function onSubmit(e: FormEvent<HTMLFormElement>) {
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const fd = new FormData(form);
     // Honeypot: real people never see or fill this field.
     if (fd.get("botcheck")) {
-      setStatus("success");
+      setSentUrl("#contact");
       return;
     }
-    const data = {
+    const data: Enquiry = {
       name: String(fd.get("name") ?? "").trim(),
       email: String(fd.get("email") ?? "").trim(),
       project_type: String(fd.get("project_type") ?? ""),
       message: String(fd.get("message") ?? "").trim(),
     };
-    setStatus("sending");
-    try {
-      await send(data);
-      form.reset();
-      setType("");
-      setStatus("success");
-    } catch (err) {
-      console.error(err);
-      setStatus("error");
-    }
+    const url = whatsappUrl(data);
+    // Opened straight from the submit event so pop-up blockers allow it.
+    const win = window.open(url, "_blank");
+    if (win) win.opener = null;
+    sendEmailCopy(data);
+    form.reset();
+    setType("");
+    setSentUrl(url);
   }
 
-  if (status === "success") {
+  if (sentUrl) {
     return (
-      <div
-        ref={statusRef}
-        tabIndex={-1}
-        role="status"
-        className="rounded-[var(--radius-md)] border border-ok/40 bg-paper-2 p-6 md:p-8"
-      >
-        <p className="label !text-ok">Message sent</p>
-        <p className="mt-3 font-serif text-[2rem] leading-tight">Thank you.</p>
+      <div ref={statusRef} tabIndex={-1} role="status" className="border border-ok/30 bg-ok/5 p-6 md:p-8">
+        <p className="font-mono text-xs uppercase tracking-[0.1em] text-ok">Almost done</p>
+        <p className="mt-3 font-display text-[1.75rem] font-bold">Tap send in WhatsApp.</p>
         <p className="mt-2 text-muted">{contact.success}</p>
-        <button
-          type="button"
-          onClick={() => setStatus("idle")}
-          className="mt-6 inline-flex min-h-11 items-center font-medium link-underline"
-        >
+        <p className="mt-4 text-[0.9375rem] text-muted">{contact.notOpened}</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a href={sentUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">
+            <Chat width={16} height={16} />
+            Open WhatsApp
+          </a>
+          {email && (
+            <a href={email} className="btn btn-ghost btn-sm normal-case tracking-normal">
+              {links.email}
+            </a>
+          )}
+        </div>
+        <button type="button" onClick={() => setSentUrl(null)} className="text-link mt-4">
           Send another message
         </button>
       </div>
@@ -115,23 +128,15 @@ export function ContactForm() {
     <form onSubmit={onSubmit} className="grid gap-5" aria-describedby="form-note">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="cf-name" className="mb-1.5 block text-[0.9375rem] font-medium">
+          <label htmlFor="cf-name" className={labelClass}>
             Your name
           </label>
-          <input
-            id="cf-name"
-            name="name"
-            type="text"
-            autoComplete="name"
-            required
-            maxLength={120}
-            className={inputClass}
-          />
-          <p className="field-error mt-1.5 hidden text-[0.875rem] text-accent">Please add your name.</p>
+          <input id="cf-name" name="name" type="text" autoComplete="name" required maxLength={120} className={inputClass} />
+          <p className="field-error mt-1.5 hidden text-[0.875rem] text-red-400">Please add your name.</p>
         </div>
         <div>
-          <label htmlFor="cf-email" className="mb-1.5 block text-[0.9375rem] font-medium">
-            Email
+          <label htmlFor="cf-email" className={labelClass}>
+            Email <span className="normal-case tracking-normal text-muted/80">(optional)</span>
           </label>
           <input
             id="cf-email"
@@ -141,18 +146,15 @@ export function ContactForm() {
             autoComplete="email"
             autoCapitalize="none"
             spellCheck={false}
-            required
             maxLength={200}
             className={inputClass}
           />
-          <p className="field-error mt-1.5 hidden text-[0.875rem] text-accent">
-            Please add an email I can reply to.
-          </p>
+          <p className="field-error mt-1.5 hidden text-[0.875rem] text-red-400">That email doesn&apos;t look right.</p>
         </div>
       </div>
 
       <div>
-        <label htmlFor="cf-type" className="mb-1.5 block text-[0.9375rem] font-medium">
+        <label htmlFor="cf-type" className={labelClass}>
           What do you need?
         </label>
         <div className="relative">
@@ -173,17 +175,14 @@ export function ContactForm() {
               </option>
             ))}
           </select>
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 right-3.5 flex items-center font-mono text-muted"
-          >
+          <span aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-4 flex items-center font-mono text-muted">
             ↓
           </span>
         </div>
       </div>
 
       <div>
-        <label htmlFor="cf-message" className="mb-1.5 block text-[0.9375rem] font-medium">
+        <label htmlFor="cf-message" className={labelClass}>
           Tell me about the project
         </label>
         <textarea
@@ -191,13 +190,11 @@ export function ContactForm() {
           name="message"
           required
           rows={5}
-          maxLength={5000}
+          maxLength={2000}
           placeholder="What does your business do, what do you need built, and by when?"
           className={`${inputClass} min-h-36 resize-y`}
         />
-        <p className="field-error mt-1.5 hidden text-[0.875rem] text-accent">
-          A line or two is enough.
-        </p>
+        <p className="field-error mt-1.5 hidden text-[0.875rem] text-red-400">A line or two is enough.</p>
       </div>
 
       {/* Honeypot, hidden from people and screen readers */}
@@ -206,30 +203,13 @@ export function ContactForm() {
         <input id="cf-botcheck" type="checkbox" name="botcheck" tabIndex={-1} autoComplete="off" />
       </div>
 
-      {status === "error" && (
-        <div
-          ref={statusRef}
-          tabIndex={-1}
-          role="alert"
-          className="rounded-[var(--radius-md)] border border-accent/50 bg-paper-2 p-4 text-[0.9375rem]"
-        >
-          <p className="font-medium text-accent">{contact.error}</p>
-          {email && (
-            <p className="mt-1 text-muted">
-              <a href={email} className="link-underline text-ink">
-                {links.email}
-              </a>
-            </p>
-          )}
-        </div>
-      )}
-
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <button type="submit" disabled={status === "sending"} className="btn btn-primary w-full disabled:opacity-70 sm:w-auto">
-          {status === "sending" ? "Sending…" : "Send message"}
+      <div className="grid gap-3">
+        <button type="submit" className="btn btn-primary w-full">
+          <Chat width={18} height={18} />
+          Send on WhatsApp
         </button>
-        <p id="form-note" className="text-[0.875rem] text-muted">
-          Replies within 24 hours. No newsletters, ever.
+        <p id="form-note" className="text-center text-[0.875rem] text-muted">
+          Opens WhatsApp with your message ready to send. I reply within 24 hours.
         </p>
       </div>
     </form>

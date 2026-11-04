@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { person } from "@/content/site";
 
 /** Shows the current time where you are, e.g. "10:42 pm IST". */
-export function LocalTime() {
+export function LocalTime({ suffix = true }: { suffix?: boolean }) {
   const [time, setTime] = useState<string | null>(null);
 
   useEffect(() => {
@@ -23,7 +23,8 @@ export function LocalTime() {
   return (
     <span suppressHydrationWarning>
       {time ? `${time} ` : ""}
-      {person.timezoneLabel} local time
+      {person.timezoneLabel}
+      {suffix ? " local time" : ""}
     </span>
   );
 }

@@ -1,62 +1,64 @@
 import { services } from "@/content/site";
 import { formatPrice } from "@/lib/content";
 import { SectionHead } from "@/components/SectionHead";
+import { ArrowRight, Check } from "@/components/Icons";
+
+/** Index of the plan to highlight. Set to -1 for none. */
+const HIGHLIGHT = 1;
 
 export function Services() {
   return (
-    <section id="services" aria-labelledby="services-title" className="container-page pt-20 md:pt-32">
+    <section id="services" aria-labelledby="services-title" className="container-page pt-20 md:pt-28">
       <SectionHead
         id="services"
         index="02"
         label="Services"
-        title="What I can build for you."
-        intro="Three starting points. Every project gets a written scope, so you know the price and the date before anything starts."
+        title="Pick a starting point for your business."
+        emphasis="your business."
+        intro="Every project gets a written scope, so you know the price and the date before anything starts."
       />
-      <div className="grid md:grid-cols-3">
+      <div className="grid gap-5 md:grid-cols-3 md:items-stretch">
         {services.map((s, i) => {
           const price = formatPrice(s);
+          const hot = i === HIGHLIGHT;
           return (
             <article
               key={s.name}
               aria-labelledby={`service-${i}`}
-              className="flex flex-col border-t border-line py-8 md:border-t-0 md:border-l md:px-6 md:py-2 md:first:border-l-0 md:first:pl-0 lg:px-8 md:last:pr-0"
+              className={`card flex flex-col p-6 md:p-7 ${hot ? "hud border-accent/50 bg-surface-2" : ""}`}
               data-reveal
             >
-              <p className="label">{String(i + 1).padStart(2, "0")}</p>
-              <h3 id={`service-${i}`} className="mt-3 font-serif text-[2rem] leading-[1.05]">
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-mono text-[0.75rem] text-accent">[{String(i + 1).padStart(2, "0")}]</p>
+                {hot && <span className="pill">Recommended</span>}
+              </div>
+              <h3 id={`service-${i}`} className="mt-4 text-[1.5rem] font-bold leading-tight">
                 {s.name}
               </h3>
-              <p className="mt-4">
-                <span className="label mr-2 !text-accent">Good for</span>
-                <span className="text-muted">{s.goodFor}</span>
-              </p>
-              <ul className="mt-6 space-y-2.5 text-[0.9875rem]">
+              {price && (
+                <p className="mt-3 font-display text-[1.75rem] font-bold leading-none text-accent">
+                  {price}
+                </p>
+              )}
+              <p className="mt-2 font-mono text-[0.75rem] text-muted">Typical timeline: {s.timeline}</p>
+              <p className="mt-5 text-[0.9375rem] leading-relaxed text-muted">{s.goodFor}</p>
+
+              <ul className="mt-6 space-y-3 border-t border-line pt-6 text-[0.9375rem]">
                 {s.includes.map((item) => (
                   <li key={item} className="flex gap-3">
-                    <span aria-hidden="true" className="mt-[0.6em] h-px w-3 shrink-0 bg-accent" />
+                    <Check width={16} height={16} className="mt-1 shrink-0 text-accent" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
+
               <div className="mt-8 md:mt-auto md:pt-8">
-                <dl className="grid grid-cols-2 gap-4 border-t border-line pt-4">
-                  <div>
-                    <dt className="label">Typical timeline</dt>
-                    <dd className="mt-1 text-[0.9375rem]">{s.timeline}</dd>
-                  </div>
-                  {price && (
-                    <div>
-                      <dt className="label">Price</dt>
-                      <dd className="mt-1 text-[0.9375rem]">{price}</dd>
-                    </div>
-                  )}
-                </dl>
                 <a
                   href="#contact"
                   data-service={s.projectType}
-                  className="mt-5 inline-flex min-h-11 items-center gap-2 font-medium text-accent link-underline"
+                  className={`btn btn-sm w-full ${hot ? "btn-primary" : "btn-ghost"}`}
                 >
-                  Ask about this <span aria-hidden="true">→</span>
+                  Ask about this <ArrowRight width={15} height={15} />
                   <span className="sr-only">: {s.name}</span>
                 </a>
               </div>

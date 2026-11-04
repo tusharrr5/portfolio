@@ -4,7 +4,7 @@
  * images-src/work/<slug>.(png|jpg|jpeg|webp)  -> public/images/work/<slug>-{640,960,1280,1920}.webp
  *   Cropped to 16:10 from the top, so every project card lines up.
  * images-src/me.(png|jpg|jpeg|webp)           -> public/images/me-{640,960,1280,1920}.webp
- *   Cropped to 4:5 around the centre.
+ *   Cropped square around the centre.
  *
  * Then reference the base name in src/content/site.ts, e.g. "/images/work/tohfa.webp".
  */
@@ -44,7 +44,7 @@ async function main() {
   }
 
   const me = (await readdir(SRC).catch(() => [])).find((f) => /^me\.(png|jpe?g|webp)$/i.test(f));
-  if (me) await render(path.join(SRC, me), path.join(OUT, "me"), 4 / 5, [640, 960, 1280, 1920], "centre");
+  if (me) await render(path.join(SRC, me), path.join(OUT, "me"), 1, [640, 960, 1280, 1920], "centre");
 
   if (!files.length && !me) console.log("No images found in images-src/. Nothing to do.");
 }

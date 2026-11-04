@@ -33,7 +33,7 @@ export function MobileBar() {
 
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] transition-transform duration-200 motion-reduce:transition-none md:hidden ${
+      className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-bg/95 backdrop-blur-md px-3 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] transition-transform duration-200 motion-reduce:transition-none md:hidden ${
         hidden ? "translate-y-full" : "translate-y-0"
       } in-data-[menu=open]:hidden`}
       aria-hidden={hidden}
@@ -50,7 +50,7 @@ export function MobileBar() {
             WhatsApp
           </a>
         ) : (
-          <span className="placeholder-chip flex-1 justify-center">[WHATSAPP NUMBER]</span>
+          <span className="btn btn-ghost btn-sm flex-1 text-muted">[WHATSAPP NUMBER]</span>
         )}
         <Link href="/#contact" className="btn btn-primary btn-sm flex-1">
           Start a project

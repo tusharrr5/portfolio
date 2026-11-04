@@ -1,78 +1,75 @@
-import { contact, links, settings } from "@/content/site";
+import { contact, links } from "@/content/site";
 import { emailHref, isPlaceholder, whatsappHref } from "@/lib/content";
 import { ContactForm } from "@/components/ContactForm";
-import { LocalTime } from "@/components/LocalTime";
+import { Chat, Github, Linkedin, Mail } from "@/components/Icons";
+import { Highlight } from "@/lib/highlight";
 
 export function Contact() {
   const email = emailHref();
   const wa = whatsappHref();
+  const tiles = [
+    { Icon: Chat, title: "WhatsApp", sub: "Fastest reply", href: wa, external: true },
+    { Icon: Mail, title: "Email", sub: email ? links.email : "[EMAIL]", href: email, external: false },
+    { Icon: Github, title: "GitHub", sub: "@tusharrr5", href: isPlaceholder(links.github) ? null : links.github, external: true },
+    { Icon: Linkedin, title: "LinkedIn", sub: "Tushar Bhojwani", href: isPlaceholder(links.linkedin) ? null : links.linkedin, external: true },
+  ];
 
   return (
-    <section id="contact" aria-labelledby="contact-title" className="container-page pt-20 pb-20 md:pt-32 md:pb-32">
-      <div className="flex items-baseline justify-between border-t border-ink pt-3">
-        <span className="label !text-ink">Contact</span>
-        <span className="label">07</span>
-      </div>
+    <section id="contact" aria-labelledby="contact-title" className="container-page py-20 md:py-28">
+      <div className="card hud grid grid-cols-[minmax(0,1fr)] overflow-hidden lg:grid-cols-[1fr_1.15fr]" data-reveal>
+        <div className="relative border-b border-line bg-surface-2 p-6 sm:p-8 lg:border-r lg:border-b-0 lg:p-10">
+          <div aria-hidden="true" className="dot-bg absolute inset-0 opacity-50" />
+          <div className="relative">
+            <p className="eyebrow">
+              <span aria-hidden="true">{"//"}</span>
+              <span aria-hidden="true">07</span>
+              Contact
+            </p>
+            <h2
+              id="contact-title"
+              className="mt-4 text-[2.125rem] font-bold leading-[1.08] tracking-[-0.01em] md:text-[2.75rem]"
+            >
+              <Highlight text={contact.heading} emphasis={contact.emphasis} />
+            </h2>
+            <p className="mt-4 max-w-md leading-relaxed text-muted">{contact.intro}</p>
 
-      <div className="mt-6 grid gap-12 md:grid-cols-12 md:gap-x-10 md:gap-y-0">
-        <div className="md:col-span-5 md:col-start-1 md:row-start-1" data-reveal>
-          <h2
-            id="contact-title"
-            className="font-serif text-[2.5rem] leading-[1.02] tracking-[-0.01em] md:text-[3.5rem] lg:text-[4.25rem]"
-          >
-            {contact.heading}
-          </h2>
-          <p className="mt-5 max-w-md text-muted">{contact.intro}</p>
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
-            {wa ? (
-              <a href={wa} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-                Chat on WhatsApp<span aria-hidden="true">↗</span>
-              </a>
-            ) : (
-              <span className="placeholder-chip justify-center">WhatsApp: [NUMBER]</span>
-            )}
-            {links.calendly && !isPlaceholder(links.calendly) && (
-              <a href={links.calendly} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-                Book a 20-min call<span aria-hidden="true">↗</span>
-              </a>
-            )}
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+              {tiles.map(({ Icon, title, sub, href, external }) => {
+                const inner = (
+                  <>
+                    <span className="grid h-10 w-10 shrink-0 place-items-center border border-line-strong text-accent transition-colors group-hover:border-accent">
+                      <Icon width={18} height={18} />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block font-display text-[1rem] font-semibold leading-tight">{title}</span>
+                      <span className="block font-mono text-[0.75rem] leading-snug text-muted [overflow-wrap:anywhere]">{sub}</span>
+                    </span>
+                  </>
+                );
+                return (
+                  <li key={title}>
+                    {href ? (
+                      <a
+                        href={href}
+                        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                        className="group flex min-h-16 items-center gap-3 border border-line bg-bg/50 p-3 transition-colors hover:border-accent/60"
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <span className="flex min-h-16 items-center gap-3 border border-dashed border-line-strong p-3 opacity-80">
+                        {inner}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </div>
 
-        <div className="md:col-span-7 md:col-start-6 md:row-span-2 md:row-start-1 md:pl-4 lg:pl-10" data-reveal>
+        <div className="p-6 sm:p-8 lg:p-10">
           <ContactForm />
-        </div>
-
-        <div className="md:col-span-5 md:col-start-1 md:row-start-2">
-          <dl className="border-t border-line text-[0.9375rem] md:mt-10">
-            <div className="flex items-baseline justify-between gap-4 border-b border-line py-3">
-              <dt className="label">Email</dt>
-              <dd className="min-w-0 truncate">
-                {email ? (
-                  <a href={email} className="link-underline">
-                    {links.email}
-                  </a>
-                ) : (
-                  <span className="font-mono text-[0.8125rem] text-muted">[EMAIL]</span>
-                )}
-              </dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4 border-b border-line py-3">
-              <dt className="label">Status</dt>
-              <dd className="text-right">{settings.availability.status}</dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4 border-b border-line py-3">
-              <dt className="label">Reply time</dt>
-              <dd>Within 24 hours</dd>
-            </div>
-            <div className="flex items-baseline justify-between gap-4 border-b border-line py-3">
-              <dt className="label">Right now</dt>
-              <dd>
-                <LocalTime />
-              </dd>
-            </div>
-          </dl>
         </div>
       </div>
     </section>

@@ -14,8 +14,8 @@ export function GET() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#f4f1ea",
-          color: "#1b1a17",
+          background: "#070c1a",
+          color: "#edf1fa",
           padding: "72px 80px",
         }}
       >
@@ -24,7 +24,7 @@ export function GET() {
             display: "flex",
             justifyContent: "space-between",
             fontSize: 24,
-            color: "#5c574e",
+            color: "#9fabc8",
             letterSpacing: 3,
             textTransform: "uppercase",
           }}
@@ -33,15 +33,15 @@ export function GET() {
           <span>India · IST</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div style={{ fontSize: 76, lineHeight: 1.05, letterSpacing: -2, maxWidth: 1000 }}>
+          <div style={{ fontSize: 76, lineHeight: 1.05, letterSpacing: -2, maxWidth: 1000, fontWeight: 800 }}>
             {hero.headline}
           </div>
-          <div style={{ display: "flex", alignItems: "center", marginTop: 40, fontSize: 26, color: "#5c574e" }}>
-            <div style={{ width: 14, height: 14, borderRadius: 7, background: "#2f5d3a", marginRight: 16 }} />
+          <div style={{ display: "flex", alignItems: "center", marginTop: 40, fontSize: 26, color: "#9fabc8" }}>
+            <div style={{ width: 14, height: 14, borderRadius: 7, background: "#3ddc97", marginRight: 16 }} />
             {settings.availability.status}
           </div>
         </div>
-        <div style={{ display: "flex", height: 6, width: 120, background: "#b0391c" }} />
+        <div style={{ display: "flex", height: 6, width: 120, background: "#27def7" }} />
       </div>
     ),
     { width: 1200, height: 630 },

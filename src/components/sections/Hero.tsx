@@ -1,84 +1,89 @@
+import Image from "next/image";
 import { hero, person, settings } from "@/content/site";
 import { LocalTime } from "@/components/LocalTime";
-
-function Headline() {
-  const { headline, emphasis } = hero;
-  const i = emphasis ? headline.indexOf(emphasis) : -1;
-  if (i < 0) return <>{headline}</>;
-  return (
-    <>
-      {headline.slice(0, i)}
-      <em className="text-accent">{emphasis}</em>
-      {headline.slice(i + emphasis.length)}
-    </>
-  );
-}
+import { ArrowRight } from "@/components/Icons";
+import { Highlight } from "@/lib/highlight";
 
 export function Hero() {
-  const { status, replyTime } = settings.availability;
+  const panel = [
+    { k: "status", v: settings.availability.status, tone: "text-ok" },
+    { k: "based_in", v: `${person.location}`, tone: "" },
+    { k: "local_time", v: <LocalTime suffix={false} />, tone: "" },
+    { k: "reply_time", v: "Within 24 hours", tone: "" },
+  ];
+
   return (
-    <section aria-labelledby="hero-title" className="container-page">
-      <div className="grid min-h-[calc(100dvh-var(--header-h)-64px)] content-center gap-12 pt-8 pb-10 md:min-h-0 md:pt-24 md:pb-20 lg:grid-cols-12 lg:gap-10 lg:pt-28">
-        <div className="lg:col-span-8">
-          <p className="label">
-            {person.role} · {person.location}
+    <section aria-labelledby="hero-title" className="relative overflow-hidden border-b border-line">
+      <div aria-hidden="true" className="dot-bg pointer-events-none absolute inset-0" />
+
+      <div className="container-page relative grid gap-12 pt-10 pb-16 md:pt-20 md:pb-24 lg:grid-cols-[1.35fr_1fr] lg:items-center lg:gap-14">
+        <div>
+          <p className="eyebrow">
+            <span aria-hidden="true">{"//"}</span> {person.role} · {person.location}
           </p>
 
           <h1
             id="hero-title"
-            className="mt-5 max-w-[15ch] font-serif text-[2.875rem] leading-[0.98] tracking-[-0.015em] sm:text-[3.5rem] md:mt-6 md:text-[5rem] lg:text-[5.25rem] xl:text-[6.25rem]"
+            className="mt-5 text-[2.5rem] font-bold leading-[1.05] tracking-[-0.01em] sm:text-[3.25rem] md:text-[3.75rem] lg:text-[4.1rem]"
           >
-            <Headline />
+            <Highlight text={hero.headline} emphasis={hero.emphasis} />
           </h1>
 
-          <p className="mt-6 max-w-[38rem] text-[1.0625rem] leading-relaxed text-muted md:mt-8 md:text-[1.25rem]">
+          <p className="mt-6 max-w-[36rem] text-[1.0625rem] leading-relaxed text-muted md:text-[1.1875rem]">
             {hero.supporting}
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href={hero.primaryCta.href} className="btn btn-primary">
+            <a href={hero.primaryCta.href} className="btn btn-primary px-4 sm:px-6">
               {hero.primaryCta.label}
+              <ArrowRight width={16} height={16} className="hidden sm:block" />
             </a>
-            <a href={hero.secondaryCta.href} className="btn btn-ghost">
+            <a href={hero.secondaryCta.href} className="btn btn-ghost px-4 sm:px-6">
               {hero.secondaryCta.label}
             </a>
           </div>
 
-          <p className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[0.75rem] leading-relaxed text-muted md:text-[0.8125rem]">
-            <span className="inline-flex items-center gap-2 whitespace-nowrap text-ink">
-              <span className="h-2 w-2 shrink-0 rounded-full bg-ok" aria-hidden="true" />
-              {status}
-            </span>
-            <span className="whitespace-nowrap">
-              <span aria-hidden="true" className="hidden sm:inline">· </span>
-              {replyTime} · <LocalTime />
-            </span>
-          </p>
-        </div>
-
-        <aside aria-label="Quick facts" className="hidden lg:col-span-4 lg:block lg:self-end">
-          <dl className="border-t border-ink">
-            {hero.facts.map((f) => (
-              <div key={f.label} className="border-b border-line py-4">
-                <dt className="label">{f.label}</dt>
-                <dd className="mt-1">{f.value}</dd>
+          <dl className="mt-10 grid max-w-xl grid-cols-3 gap-4 border-t border-line pt-6">
+            {hero.stats.map((s) => (
+              <div key={s.label}>
+                <dt className="sr-only">{s.label}</dt>
+                <dd className="font-display text-[1.75rem] font-bold leading-none text-accent md:text-[2rem]">{s.value}</dd>
+                <dd className="mt-2 text-[0.8125rem] leading-snug text-muted">{s.label}</dd>
               </div>
             ))}
           </dl>
-        </aside>
-      </div>
+        </div>
 
-      <dl className="grid border-t border-line sm:grid-cols-3 lg:hidden" data-reveal>
-        {hero.facts.map((f) => (
-          <div
-            key={f.label}
-            className="flex items-baseline justify-between gap-4 border-b border-line py-3 sm:block sm:border-b-0 sm:border-l sm:py-5 sm:pl-5 sm:first:border-l-0 sm:first:pl-0"
-          >
-            <dt className="label">{f.label}</dt>
-            <dd className="text-right text-[0.9375rem] sm:mt-1 sm:text-left">{f.value}</dd>
+        {person.photo && (
+          <div className="relative mx-auto w-full max-w-[22rem] lg:max-w-none" data-reveal>
+            {/* Soft orange + cyan glow, picking up the ring and icons in the portrait */}
+            <div aria-hidden="true" className="portrait-glow pointer-events-none absolute -inset-6 sm:-inset-10" />
+            <div className="card hud relative overflow-visible p-2.5">
+              <div className="relative aspect-square overflow-hidden bg-surface-2">
+                <Image
+                  src={person.photo.src}
+                  alt={person.photo.alt}
+                  width={person.photo.width}
+                  height={person.photo.height}
+                  sizes="(min-width: 1024px) 26rem, 22rem"
+                  className="h-full w-full object-cover"
+                />
+                <span className="absolute top-3 left-3 bg-bg/75 px-2 py-1 font-mono text-[0.6875rem] tracking-[0.1em] text-accent">
+                  ID · TB-2026
+                </span>
+              </div>
+              <dl className="mt-2.5 divide-y divide-line border-t border-line font-mono text-[0.75rem]">
+                {panel.map((row) => (
+                  <div key={row.k} className="flex items-center justify-between gap-4 px-1.5 py-2">
+                    <dt className="text-muted">{row.k}</dt>
+                    <dd className={`text-right ${row.tone || "text-fg"}`}>{row.v}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
           </div>
-        ))}
-      </dl>
+        )}
+      </div>
     </section>
   );
 }

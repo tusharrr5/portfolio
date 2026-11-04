@@ -1,64 +1,52 @@
-import Image from "next/image";
-import { about, person, stack } from "@/content/site";
+import { about, person, settings, stack } from "@/content/site";
 import { SectionHead } from "@/components/SectionHead";
 import { StackList } from "@/components/StackList";
 
 export function About() {
+  const facts: [string, string][] = [
+    ["name", person.name],
+    ["based_in", `${person.location} (${person.timezoneLabel})`],
+    ["studying", `${person.education.degree}, ${person.education.school}`],
+    ["batch", person.education.years],
+    ["community", "AWS Student Builder campus leader"],
+    ["freelance", settings.availability.status],
+  ];
+
   return (
-    <section id="about" aria-labelledby="about-title" className="container-page pt-20 md:pt-32">
+    <section id="about" aria-labelledby="about-title" className="container-page pt-20 md:pt-28">
       <SectionHead id="about" index="04" label="About" title={about.heading} />
-      <div className="grid gap-10 md:grid-cols-12 md:gap-10">
-        <div className="md:col-span-4" data-reveal>
-          <div className="relative aspect-[4/5] max-w-[22rem] overflow-hidden rounded-[var(--radius-md)] border border-line bg-paper-2">
-            {person.photo ? (
-              <Image
-                src={person.photo.src}
-                alt={person.photo.alt}
-                width={person.photo.width}
-                height={person.photo.height}
-                sizes="(min-width: 768px) 22rem, 90vw"
-                priority={false}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="absolute inset-0 flex flex-col justify-between p-4" role="img" aria-label="Photo coming soon">
-                <span className="label">[ADD PHOTO]</span>
-                <span className="label normal-case tracking-normal">images-src/me.jpg · 4:5</span>
-              </div>
-            )}
-          </div>
+      <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:gap-14">
+        <div className="space-y-4 text-[1.0625rem] leading-relaxed text-muted" data-reveal>
+          {about.paragraphs.map((p) => (
+            <p key={p.slice(0, 24)}>{p}</p>
+          ))}
         </div>
 
-        <div className="md:col-span-8" data-reveal>
-          <div className="max-w-[40rem] space-y-5 text-[1.125rem] leading-relaxed md:text-[1.1875rem]">
-            {about.paragraphs.map((p) => (
-              <p key={p.slice(0, 24)}>{p}</p>
-            ))}
+        <div className="card hud self-start overflow-hidden" data-reveal>
+          <div className="flex items-center gap-2 border-b border-line px-4 py-2.5">
+            <span className="h-2 w-2 bg-warm" aria-hidden="true" />
+            <span className="font-mono text-[0.75rem] text-muted">about.json</span>
           </div>
-
-          <dl className="mt-10 grid gap-0 border-t border-line">
-            <div className="grid gap-1 border-b border-line py-4 sm:grid-cols-[10rem_1fr] sm:gap-6">
-              <dt className="label pt-0.5">Studying</dt>
-              <dd>
-                {person.education.degree}, {person.education.school}, {person.education.years}
-              </dd>
-            </div>
-            <div className="grid gap-1 border-b border-line py-4 sm:grid-cols-[10rem_1fr] sm:gap-6">
-              <dt className="label pt-0.5">Based in</dt>
-              <dd>
-                {person.location} · {person.timezoneLabel} (UTC+5:30)
-              </dd>
-            </div>
-            {Object.entries(stack).map(([group, items]) => (
-              <div key={group} className="grid gap-2 border-b border-line py-4 sm:grid-cols-[10rem_1fr] sm:gap-6">
-                <dt className="label pt-1">{group}</dt>
-                <dd>
-                  <StackList items={items} label={group} />
-                </dd>
+          <dl className="space-y-2 p-4 font-mono text-[0.8125rem] leading-relaxed md:p-5">
+            {facts.map(([k, v]) => (
+              <div key={k} className="grid grid-cols-[6.5rem_1fr] gap-3">
+                <dt className="text-accent">{k}</dt>
+                <dd className="text-fg">{v}</dd>
               </div>
             ))}
           </dl>
         </div>
+      </div>
+
+      <div className="mt-12 grid gap-8 border-t border-line pt-10 sm:grid-cols-2 lg:grid-cols-4" data-reveal>
+        {Object.entries(stack).map(([group, items]) => (
+          <div key={group}>
+            <h3 className="mono-label !text-[0.6875rem] font-normal">{group}</h3>
+            <div className="mt-3">
+              <StackList items={items} label={group} />
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

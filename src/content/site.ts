@@ -25,16 +25,16 @@ export const person = {
   /** Source photo: images-src/me.*  →  run `npm run images`. Width/height = the real pixel size. */
   photo: {
     src: "/images/me.webp",
-    alt: "Tushar Bhojwani in a navy suit",
+    alt: "Illustrated portrait of Tushar Bhojwani in a navy suit, ringed by code, cloud, GitHub, React and Python icons",
     width: 640,
-    height: 800,
+    height: 640,
   } as null | { src: string; alt: string; width: number; height: number },
 };
 
 // ── Links ────────────────────────────────────────────────────
 
 export const links = {
-  email: "[EMAIL]",
+  email: "tusharbhojwani.in@gmail.com",
   /** Digits only with country code, no + or spaces. */
   whatsapp: "919232928771",
   whatsappMessage: "Hi Tushar, I saw your portfolio and I'd like to talk about a project.",
@@ -70,8 +70,8 @@ export const seo = {
 export const nav = [
   { label: "Work", href: "/#work" },
   { label: "Services", href: "/#services" },
+  { label: "Process", href: "/#process" },
   { label: "About", href: "/#about" },
-  { label: "FAQ", href: "/#faq" },
 ];
 
 // ── Hero ─────────────────────────────────────────────────────
@@ -84,10 +84,11 @@ export const hero = {
     "I'm a full-stack developer and CS student in Delhi. I build business sites, e-commerce stores and AI features, and you get a working preview link in the first week.",
   primaryCta: { label: "Start a project", href: "#contact" },
   secondaryCta: { label: "See my work", href: "#work" },
-  facts: [
-    { label: "Based in", value: "Delhi, India · works remotely" },
-    { label: "Good fit for", value: "Small businesses, early startups" },
-    { label: "Builds with", value: "React, Node.js, MongoDB" },
+  /** The strip under the hero. Only real, checkable numbers. */
+  stats: [
+    { value: "300+", label: "students onboarded as AWS campus leader" },
+    { value: "10", label: "open-source pull requests" },
+    { value: "24h", label: "typical reply time" },
   ],
 };
 
@@ -123,6 +124,8 @@ export type Project = {
   code: string;
   /** Button text for the code link. Defaults to "Code". */
   codeLabel?: string;
+  /** Small tags next to the project number, e.g. "Live", "Open source". */
+  badges: string[];
   image: null | { src: string; alt: string };
   /** Three short facts, shown on the panel when there's no screenshot. */
   highlights?: string[];
@@ -150,6 +153,7 @@ export const projects: Project[] = [
     stack: ["TypeScript", "Node.js", "Fastify", "PostgreSQL", "React", "Razorpay test mode", "Gemma 4"],
     live: null,
     code: "https://github.com/tusharrr5/Bound",
+    badges: ["Hackathon", "Open source"],
     image: null,
     highlights: ["165 automated tests", "Razorpay test mode", "Runs a local AI model"],
     caseStudy: {
@@ -186,6 +190,7 @@ export const projects: Project[] = [
     stack: ["React", "Node.js", "Express", "MongoDB", "JWT"],
     live: "https://course-management-system-jade-pi.vercel.app",
     code: "https://github.com/tusharrr5/course-management-system",
+    badges: ["Live", "Team lead"],
     image: {
       src: "/images/work/course-management-system.webp",
       alt: "Course Management System home page with a welcome banner and a Browse Courses button",
@@ -224,6 +229,7 @@ export const projects: Project[] = [
     live: null,
     code: "https://github.com/vikas0799/shopsphere/pulls?q=is%3Apr+author%3Atusharrr5",
     codeLabel: "Pull requests",
+    badges: ["Open source", "10 PRs"],
     image: null,
     highlights: ["10 pull requests", "Order totals from real prices", "Mobile layout + dark mode"],
     caseStudy: {
@@ -261,6 +267,7 @@ export const projects: Project[] = [
     stack: ["Node.js", "Express", "MongoDB", "EJS", "JWT"],
     live: "https://food-waste-redistribution-gilt.vercel.app",
     code: "https://github.com/tusharrr5/food-waste-redistribution",
+    badges: ["Prototype"],
     image: null,
     highlights: ["3 user roles", "Listed → picked up → delivered", "Admin dashboard"],
     caseStudy: {
@@ -412,7 +419,9 @@ export const faq = [
 // ── Contact ──────────────────────────────────────────────────
 
 export const contact = {
-  heading: "Tell me about your project.",
+  heading: "Have a project in mind? Tell me about it.",
+  /** Part of the heading shown in the accent colour. Must match exactly, or "". */
+  emphasis: "Tell me about it.",
   intro:
     "A few lines is enough. I'll reply within 24 hours with questions or a rough plan. If I'm not the right fit, I'll tell you that too.",
   projectTypes: [
@@ -422,8 +431,9 @@ export const contact = {
     "AI chatbot or automation",
     "Something else / not sure",
   ],
-  success: "Thanks, your message is in. I'll reply within 24 hours, usually sooner.",
-  error: "That didn't go through. Please try again, or email me directly.",
+  /** Shown after the form opens WhatsApp with the message filled in. */
+  success: "WhatsApp is open with your message ready. Tap send there and it comes straight to my business WhatsApp. I reply within 24 hours, usually sooner.",
+  notOpened: "WhatsApp didn't open? Use the button below, or email me directly.",
 };
 
 export const footer = {

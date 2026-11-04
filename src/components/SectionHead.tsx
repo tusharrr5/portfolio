@@ -1,31 +1,31 @@
+import { Highlight } from "@/lib/highlight";
+
 type Props = {
   id: string;
-  index: string;
+  index?: string;
   label: string;
   title: string;
+  emphasis?: string;
   intro?: string;
+  className?: string;
 };
 
-/** Editorial section header: numbered mono label over a hairline, big serif title. */
-export function SectionHead({ id, index, label, title, intro }: Props) {
+export function SectionHead({ id, index, label, title, emphasis, intro, className = "" }: Props) {
   return (
-    <div className="mb-10 md:mb-14" data-reveal>
-      <div className="flex items-baseline justify-between border-t border-ink pt-3">
-        <span className="label !text-ink">{label}</span>
-        <span className="label">{index}</span>
-      </div>
-      <div className="mt-6 grid gap-4 md:grid-cols-12 md:gap-8">
+    <div className={`mb-10 md:mb-14 ${className}`} data-reveal>
+      <p className="eyebrow">
+        <span aria-hidden="true">{"//"}</span>
+        {index && <span aria-hidden="true">{index}</span>}
+        {label}
+      </p>
+      <div className="mt-4 grid gap-4 md:grid-cols-[1.4fr_1fr] md:items-end md:gap-10">
         <h2
           id={`${id}-title`}
-          className="font-serif text-[2.5rem] leading-[1.02] tracking-[-0.01em] md:col-span-7 md:text-[3.5rem] lg:text-[4.25rem]"
+          className="text-[2.125rem] font-bold leading-[1.08] tracking-[-0.01em] md:text-[2.875rem]"
         >
-          {title}
+          <Highlight text={title} emphasis={emphasis} />
         </h2>
-        {intro && (
-          <p className="max-w-md text-muted md:col-span-5 md:self-end md:justify-self-end">
-            {intro}
-          </p>
-        )}
+        {intro && <p className="max-w-md text-muted md:justify-self-end">{intro}</p>}
       </div>
     </div>
   );

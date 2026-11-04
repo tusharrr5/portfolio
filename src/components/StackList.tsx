@@ -4,7 +4,7 @@ export function StackList({ items, label = "Stack" }: { items: string[]; label?:
       {items.map((item) => (
         <li
           key={item}
-          className="rounded-[var(--radius-sm)] border border-line px-2 py-1 font-mono text-[0.75rem] leading-none text-muted"
+          className="rounded-[2px] border border-line bg-surface-2 px-2 py-1 font-mono text-[0.75rem] leading-tight text-muted"
         >
           {item}
         </li>
