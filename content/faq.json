@@ -1,0 +1,28 @@
+{
+  "faq": [
+    {
+      "q": "How long does a project take?",
+      "a": "A landing page usually takes 1 to 2 weeks and a business website 2 to 4 weeks. Stores and custom apps depend on the features, so you get a fixed date in the written scope before we start."
+    },
+    {
+      "q": "How many revisions do I get?",
+      "a": "Two rounds of changes at each stage are included. Since you see a live preview from week one, most changes happen early, when they're quick to make. Anything outside the agreed scope gets quoted before I do it."
+    },
+    {
+      "q": "How does payment work?",
+      "a": "50% upfront to book your slot, and the remaining 50% when the site is ready to launch. The price is fixed in the scope, so there are no surprise bills."
+    },
+    {
+      "q": "Who owns the code?",
+      "a": "You do. Once the final payment is made, the code, the domain and every account are yours. I hand over the repository and all logins at launch."
+    },
+    {
+      "q": "What happens after launch?",
+      "a": "I fix any bugs that show up in the first 50 days for free. After that I can help with updates when you need them, or you can give the code to any developer. It's standard React and Next.js, nothing unusual."
+    },
+    {
+      "q": "You're a student. Will you have time for my project?",
+      "a": "Yes. I take on a small number of projects at a time so each one gets proper attention, and I tell you my availability before we start. You'll hear back within 24 hours, IST."
+    }
+  ]
+}

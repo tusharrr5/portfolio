@@ -1,0 +1,20 @@
+{
+  "steps": [
+    {
+      "name": "Brief",
+      "body": "You tell me what the business does, who it's for and when you need it. A short call or a WhatsApp chat is enough."
+    },
+    {
+      "name": "Scope",
+      "body": "I send a written plan: pages or features, timeline and price. Nothing starts until you approve it."
+    },
+    {
+      "name": "Build",
+      "body": "You get a live preview link in week one, then updates as it grows. Your feedback goes into the next round."
+    },
+    {
+      "name": "Launch and handover",
+      "body": "I put it on your domain, connect analytics, and hand over the code, the logins and a short guide."
+    }
+  ]
+}

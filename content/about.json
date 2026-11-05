@@ -1,0 +1,43 @@
+{
+  "heading": "A student who ships, and tells you where things stand.",
+  "paragraphs": [
+    "I'm Tushar Bhojwani, a B.Tech CSE (AI/ML) student at Mirai School of Technology. I build full-stack web apps with React, Next.js, Node.js and Python.",
+    "I start taking freelance work in December 2026. I don't have a long client list yet. What I can promise is fast replies, a working preview early, and the time to get the small things right. All my code is public, so you can check the work before you write to me.",
+    "Outside coursework I'm the AWS Student Builder campus leader at my college, where I've helped onboard 300+ students, and I'm working through data structures in C++ one problem at a time."
+  ],
+  "stack": [
+    {
+      "group": "Front end",
+      "items": [
+        "React",
+        "Next.js",
+        "TypeScript",
+        "Tailwind"
+      ]
+    },
+    {
+      "group": "Back end",
+      "items": [
+        "Node.js",
+        "Express",
+        "Python",
+        "FastAPI",
+        "MongoDB"
+      ]
+    },
+    {
+      "group": "Shipping",
+      "items": [
+        "Git",
+        "GitHub",
+        "Vercel"
+      ]
+    },
+    {
+      "group": "AI",
+      "items": [
+        "LLM APIs"
+      ]
+    }
+  ]
+}

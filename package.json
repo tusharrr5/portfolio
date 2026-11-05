@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "preview": "node scripts/serve-out.mjs",
+    "preview": "next start -p 4173",
+    "cms": "decap-server",
     "lint": "eslint",
     "images": "node scripts/optimize-images.mjs",
     "screenshots": "node scripts/screenshots.mjs"
@@ -22,6 +23,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "decap-server": "3.11.3",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "sharp": "^0.35.5",

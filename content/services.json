@@ -1,0 +1,46 @@
+{
+  "services": [
+    {
+      "name": "Landing page",
+      "goodFor": "A new product, an event, or a local service that needs one clear page and a way to get enquiries.",
+      "includes": [
+        "One page, written and designed around a single offer",
+        "Built for phones first, fast on slow networks",
+        "Enquiry form and WhatsApp button",
+        "Basic SEO so Google can find and show it",
+        "Set up on your domain"
+      ],
+      "timeline": "1 to 2 weeks",
+      "priceFrom": 8000,
+      "projectType": "Landing page"
+    },
+    {
+      "name": "Business website",
+      "goodFor": "Shops, clinics, studios and agencies that need a proper site people can trust before they call.",
+      "includes": [
+        "Up to 6 pages: home, services, about, contact and more",
+        "Contact form, WhatsApp, Google Maps",
+        "SEO basics, sitemap and analytics",
+        "Speed and accessibility checks before launch",
+        "A short guide so you can update text yourself"
+      ],
+      "timeline": "2 to 4 weeks",
+      "priceFrom": 20000,
+      "projectType": "Business website"
+    },
+    {
+      "name": "Custom app, store or AI feature",
+      "goodFor": "Founders and businesses that need to sell online, manage orders, or add an AI chatbot or automation.",
+      "includes": [
+        "Online store with cart, checkout and payments",
+        "Admin panel for products, orders and customers",
+        "AI chatbot or workflow automation using LLM APIs",
+        "User accounts and a database",
+        "Written scope with milestones before work starts"
+      ],
+      "timeline": "4 to 8 weeks, set in the scope",
+      "priceFrom": 45000,
+      "projectType": "Online store or custom app"
+    }
+  ]
+}

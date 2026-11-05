@@ -1,0 +1,27 @@
+{
+  "headline": "Websites and online stores that help small businesses win customers.",
+  "emphasis": "win customers",
+  "supporting": "I'm a full-stack developer and CS student in Delhi. I build business sites, e-commerce stores and AI features, and you get a working preview link in the first week.",
+  "primaryCta": {
+    "label": "Start a project",
+    "href": "#contact"
+  },
+  "secondaryCta": {
+    "label": "See my work",
+    "href": "#work"
+  },
+  "stats": [
+    {
+      "value": "300+",
+      "label": "students onboarded as AWS campus leader"
+    },
+    {
+      "value": "10",
+      "label": "open-source pull requests"
+    },
+    {
+      "value": "24h",
+      "label": "typical reply time"
+    }
+  ]
+}

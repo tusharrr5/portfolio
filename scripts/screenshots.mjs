@@ -16,8 +16,13 @@ const widths = (process.env.WIDTHS || "360,390,430,768,1024,1440").split(",").ma
 const pages = ["/", "/work/bound/", "/work/course-management-system/"];
 const sections = ["hero", "work", "services", "process", "about", "faq", "contact", "site-footer"];
 
-const server = spawn("node", [path.join(root, "scripts/serve-out.mjs")], { env: { ...process.env, PORT: String(port) } });
-await new Promise((r) => setTimeout(r, 600));
+// Serves the production build (`npm run build` first).
+const server = spawn(path.join(root, "node_modules/.bin/next"), ["start", "-p", String(port)], { cwd: root });
+for (let i = 0; i < 50; i++) {
+  const up = await fetch(base).then(() => true, () => false);
+  if (up) break;
+  await new Promise((r) => setTimeout(r, 200));
+}
 
 await rm(outDir, { recursive: true, force: true });
 await mkdir(outDir, { recursive: true });

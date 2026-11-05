@@ -1,0 +1,14 @@
+{
+  "heading": "Have a project in mind? Tell me about it.",
+  "emphasis": "Tell me about it.",
+  "intro": "A few lines is enough. I'll reply within 24 hours with questions or a rough plan. If I'm not the right fit, I'll tell you that too.",
+  "projectTypes": [
+    "Landing page",
+    "Business website",
+    "Online store or custom app",
+    "AI chatbot or automation",
+    "Something else / not sure"
+  ],
+  "success": "WhatsApp is open with your message ready. Tap send there and it comes straight to my business WhatsApp. I reply within 24 hours, usually sooner.",
+  "notOpened": "WhatsApp didn't open? Use the button below, or email me directly."
+}

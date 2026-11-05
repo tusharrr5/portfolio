@@ -1,0 +1,41 @@
+{
+  "person": {
+    "name": "Tushar Bhojwani",
+    "role": "Full-stack developer",
+    "location": "Delhi, India",
+    "timezone": "Asia/Kolkata",
+    "timezoneLabel": "IST",
+    "education": {
+      "degree": "B.Tech CSE (AI/ML)",
+      "school": "Mirai School of Technology",
+      "years": "2025–2029"
+    },
+    "photo": {
+      "src": "/images/me.webp",
+      "alt": "Illustrated portrait of Tushar Bhojwani in a navy suit, ringed by code, cloud, GitHub, React and Python icons"
+    }
+  },
+  "links": {
+    "email": "tusharbhojwani.in@gmail.com",
+    "whatsapp": "919232928771",
+    "whatsappMessage": "Hi Tushar, I saw your portfolio and I'd like to talk about a project.",
+    "github": "https://github.com/tusharrr5",
+    "linkedin": "https://www.linkedin.com/in/tushar-bhojwani05/",
+    "calendly": ""
+  },
+  "settings": {
+    "showPrices": true,
+    "currency": "₹",
+    "availability": {
+      "status": "Taking projects from December 2026",
+      "replyTime": "Replies within 24h"
+    }
+  },
+  "seo": {
+    "title": "Tushar Bhojwani · Websites and web apps for small businesses",
+    "description": "Tushar Bhojwani is a student full-stack developer in Delhi building business websites, e-commerce stores and AI features for small businesses and startups. Live preview in week one."
+  },
+  "footer": {
+    "note": "Built with Next.js and hosted on Vercel."
+  }
+}

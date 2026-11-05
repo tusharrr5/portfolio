@@ -1,12 +1,13 @@
 # Freelance portfolio
 
-A single-page portfolio with case study pages. Built with Next.js 16 (App Router), TypeScript and Tailwind 4, exported as static HTML and deployed on Vercel.
+A single-page portfolio with case study pages and an admin panel at `/admin`. Built with Next.js 16 (App Router), TypeScript and Tailwind 4, and deployed on Vercel. Every page is prerendered as static HTML.
 
 ```bash
 npm install
 npm run dev          # http://localhost:3000
-npm run build        # static site in /out
-npm run preview      # serve /out on http://localhost:4173
+npm run build        # production build
+npm run preview      # serve the build on http://localhost:4173
+npm run cms          # with `npm run dev`: edit content at localhost:3000/admin/ without logging in
 npm run lint
 npm run images       # resize screenshots/photo into /public/images
 npm run screenshots  # Playwright screenshots at 360–1440px into /screenshots (run build first)
@@ -14,31 +15,55 @@ npm run screenshots  # Playwright screenshots at 360–1440px into /screenshots 
 
 ---
 
-## 1. Editing content
+## 1. Editing content: the admin panel
 
-**Everything you'd want to change is in [`src/content/site.ts`](src/content/site.ts).** Text, links, projects, case studies, services, prices, FAQ and the contact form options all live there. You shouldn't need to open a component.
+Go to **https://tusharbhojwani.vercel.app/admin/**, sign in with GitHub and edit anything: profile and links, availability, hero text and numbers, projects and case studies, services and prices, process, about and skills, FAQ, testimonials and the contact form text.
 
-- Anything in `[SQUARE BRACKETS]` is a placeholder. Search the file for `[` to find them all.
-- **Prices:** set `settings.showPrices` to `false` to hide every price on the site. Set each service's `priceFrom` to a number (e.g. `15000`). It shows as "From ₹15,000".
-- **Projects:** `featured: true` shows a project on the home page and creates its `/work/<slug>/` page. Keep 3 or 4 featured. Order in the array is the order on the page.
-- **Testimonials:** the section is hidden until `testimonials` has at least one entry. Only add real quotes, with permission.
-- **Hero headline:** `hero.emphasis` is the part set in red italic. It must match text inside `hero.headline` exactly.
-- **Calendly:** set `links.calendly` to show a "Book a call" button in the contact section. Leave it `""` to hide it.
+Press **Publish → Publish now** to save. The admin commits the change to the GitHub repo, and Vercel rebuilds the site. It's live in about a minute.
+
+Only GitHub accounts with write access to `tusharrr5/portfolio` can save. Anyone else who signs in gets an error and can't change anything.
+
+**Tips**
+- **Prices:** "Show prices" in *Profile, links & settings* hides every price at once. Prices are plain numbers in rupees (`20000` shows as "From ₹20,000").
+- **Projects:** "Show on the home page" also creates the project's `/work/<url name>/` page. Keep 3 or 4 on. Drag to reorder; the first is the big featured card.
+- **Testimonials:** the section stays hidden until you add one. Only real quotes, with permission.
+- **Highlighted words** (hero and contact headings) must match words in the heading exactly, or be left empty.
+- **Images:** upload in the admin (photo, project screenshots). Uploads go to `public/images/uploads/` and are used as-is, so keep them under about 500 KB. A wide (16:10) desktop screenshot works best for projects, a square image for your photo.
+
+### One-time setup (so you can sign in)
+
+The admin signs in through a GitHub OAuth App. Do this once:
+
+1. Open https://github.com/settings/developers → **OAuth Apps** → **New OAuth App**.
+2. Fill in:
+   - **Application name:** `Portfolio admin`
+   - **Homepage URL:** `https://tusharbhojwani.vercel.app`
+   - **Authorization callback URL:** `https://tusharbhojwani.vercel.app/api/decap/callback/` (keep the `/` at the end)
+3. Click **Register application**. Copy the **Client ID**, then click **Generate a new client secret** and copy it. You only see the secret once.
+4. In Vercel → your project → **Settings → Environment Variables**, add:
+   - `GITHUB_CLIENT_ID` = the Client ID
+   - `GITHUB_CLIENT_SECRET` = the client secret
+5. **Deployments → ⋯ → Redeploy.**
+6. Open `/admin/`, click **Login with GitHub** and approve.
+
+If you change your domain later, update both URLs in the OAuth App to the new domain.
+
+### Editing on your computer
+
+Run `npm run dev` and `npm run cms` in two terminals, then open http://localhost:3000/admin/. Changes are written straight to the files in `/content` with no login. Commit and push them yourself.
+
+You can also edit the JSON files in `/content` by hand. `src/content/site.ts` loads them and fills in defaults for empty fields.
 
 ## 2. Adding screenshots and your photo
 
+**Easy way:** upload them in the admin panel (see section 1).
+
+**Fastest-loading way (on your computer):** this makes several sizes so phones download smaller files.
 1. Save full-size screenshots as `images-src/work/<slug>.png` (e.g. `images-src/work/tohfa.png`). Desktop screenshots at 1440px wide or more work best. They get cropped to 16:10 from the top, so every card matches.
 2. Save your photo as `images-src/me.webp` (or `.png`/`.jpg`). It gets cropped square around the centre.
 3. Run `npm run images`. This writes resized WebP files to `public/images/`.
-4. In `site.ts`, set the project's `image`:
-   ```ts
-   image: { src: "/images/work/tohfa.webp", alt: "Tohfa home page showing featured gift boxes" },
-   ```
-   and your photo:
-   ```ts
-   photo: { src: "/images/me.webp", alt: "[Your name] at a desk", width: 640, height: 640 },
-   ```
-   Use the base name (no `-640` suffix). The custom loader in `src/lib/image-loader.ts` picks the right size for each screen.
+4. Set the image path in the admin or in `content/projects.json` / `content/profile.json`, using the base name with no `-640` suffix, e.g. `/images/work/tohfa.webp` or `/images/me.webp`. The loader in `src/lib/image-loader.ts` picks the right size for each screen.
+5. Commit and push.
 
 ## 3. How the contact form works
 
@@ -66,12 +91,16 @@ Why not fully automatic delivery to WhatsApp? That needs the paid WhatsApp Busin
 5. Turn on **Analytics** in the Vercel project's Analytics tab. The `<Analytics />` component is already installed.
 6. Optional: add a custom domain under Settings → Domains, then update `NEXT_PUBLIC_SITE_URL` and redeploy.
 
-`next.config.ts` uses `output: "export"`, so `/out` is plain HTML/CSS/JS and also works on Netlify, Cloudflare Pages or GitHub Pages.
+All pages are prerendered as static HTML. Only the two admin login routes (`/api/decap/auth` and `/api/decap/callback`) run as small serverless functions, which Vercel sets up automatically.
 
 ## 5. What's where
 
 ```
-src/content/site.ts        all content
+content/*.json             all content (edited by the admin panel)
+src/content/site.ts        loads the JSON with types and defaults
+src/cms/config.ts          admin panel forms
+src/app/admin/route.ts     the /admin page
+src/app/api/decap/         GitHub sign-in for the admin
 src/app/layout.tsx         fonts, metadata, header/footer, analytics, JSON-LD
 src/app/page.tsx           home page section order
 src/app/work/[slug]/       case study pages
@@ -80,7 +109,7 @@ src/app/sitemap.ts         sitemap.xml
 src/app/robots.ts          robots.txt
 src/app/globals.css        colour tokens, buttons, reveal animation
 src/components/            UI pieces; sections/ holds the home page sections
-scripts/                   image resizing, local server, screenshot checks
+scripts/                   image resizing, screenshot checks
 ```
 
 ## 6. Design notes
@@ -114,11 +143,11 @@ Layouts and copy are original. No text was copied.
 
 ## Placeholder checklist
 
-Done: name, photo, email, WhatsApp (form delivers there), GitHub, LinkedIn, prices, projects, about, bug-fix window.
+Done: name, photo, email, site URL (tusharbhojwani.vercel.app), WhatsApp (form delivers there), GitHub, LinkedIn, prices, projects, about, bug-fix window.
 
 **Still to do**
+- [ ] Admin sign-in: create the GitHub OAuth App and add `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` in Vercel (see section 1)
 - [ ] Optional: `NEXT_PUBLIC_WEB3FORMS_KEY` in Vercel for an email copy of every enquiry, then redeploy
-- [ ] `NEXT_PUBLIC_SITE_URL` in Vercel once you know the final URL
 - [ ] `links.calendly`: optional
 
 **Projects (taken from github.com/tusharrr5)**
